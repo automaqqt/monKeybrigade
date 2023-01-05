@@ -1,0 +1,11 @@
+*.pyc
+__pycache
+.DS_Store
+project/logs/*
+project/celerybeat-schedule
+project/celerybeat.pid
+project/logs/celery.log
+project/logs/celery.log
+project/logs/celery.log
+project/utils/cmcdrops4all_eosio.key
+project/randomstuff.py

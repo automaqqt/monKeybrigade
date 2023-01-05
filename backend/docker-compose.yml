@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+    redis:
+        image: redis:6-alpine
+        restart: 'unless-stopped'
+
+    db:
+        image: postgres:13.4
+        expose:
+            - 5432
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+            - POSTGRES_DB=foo
+
+    web:
+        build: ./src
+        ports:
+            - 127.0.0.1:8003:8000
+        command: /bin/sh -c "gunicorn -w 7 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8000 main:app"
+        volumes:
+            - ./src:/usr/src/app
+        environment:
+            - CELERY_BROKER_URL=redis://redis:6379/0
+            - CELERY_RESULT_BACKEND=redis://redis:6379/0
+            - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/foo
+        depends_on:
+            - redis
+            - db
+            - celery-beat
+    
+    filler:
+        build: ./src
+        command: /bin/sh -c "python3 filler.py"
+        volumes:
+            - ./src:/usr/src/app
+        environment:
+            - CELERY_BROKER_URL=redis://redis:6379/0
+            - CELERY_RESULT_BACKEND=redis://redis:6379/0
+            - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/foo
+        depends_on:
+            - redis
+            - db
+
+    worker:
+        build: ./src
+        restart: 'unless-stopped'
+        command: celery --app=worker.celery worker --loglevel=warning --logfile=logs/celery.log --concurrency=25
+        volumes:
+            - ./src:/usr/src/app
+        environment:
+            - CELERY_BROKER_URL=redis://redis:6379/0
+            - CELERY_RESULT_BACKEND=redis://redis:6379/0
+            - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/foo
+        depends_on:
+            - web
+            - redis
+            - db
+
+    celery-beat:
+        build: ./src
+        restart: 'unless-stopped'
+        command: celery -A worker beat -l info
+        volumes:
+            - ./src/:/usr/src/app/
+        environment:
+            - CELERY_BROKER_URL=redis://redis:6379/0
+            - CELERY_RESULT_BACKEND=redis://redis:6379/0
+            - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/foo
+        depends_on:
+            - redis
+            - db
