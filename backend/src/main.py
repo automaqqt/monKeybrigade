@@ -62,11 +62,11 @@ async def get_drops(
 @app.get("/work")
 @cache(expire=5)
 async def get_drops(
-    before: str = None, after: str = None, limit: int = None, order: OrderChoose = OrderChoose.desc
+    before: str = None, after: str = None, limit: int = None, mnky: bool= False, order: OrderChoose = OrderChoose.desc
 ):
 
     start = time.perf_counter()
-    qry = list(retrieve_work(before, after, order.value, limit))
+    qry = list(retrieve_work(before, after, order.value, limit, mnky))
 
     return {"query_time": time.perf_counter() - start, "count": len(qry), "data": qry}
 

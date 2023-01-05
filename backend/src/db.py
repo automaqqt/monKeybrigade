@@ -105,7 +105,7 @@ def retrieve_drops(before: str = None, after: str = None, limit: int = 100, sort
         ]
         return out
 
-def retrieve_work(before: str = None, after: str = None, sort: str = "asc", limit: int= 100):
+def retrieve_work(before: str = None, after: str = None, sort: str = "asc", limit: int= 100, monkeysOnly: bool= False):
     with Session(engine) as session:
 
         qry = session.query(Work)
@@ -114,6 +114,8 @@ def retrieve_work(before: str = None, after: str = None, sort: str = "asc", limi
             qry = qry.filter(Work.block_time <= before)
         if after:
             qry = qry.filter(Work.block_time >= after)
+        if monkeysOnly:
+            qry = qry.filter(Work.mnky == True)
 
         if sort == "desc":
             qry = qry.order_by(desc("block_time"))
@@ -150,7 +152,7 @@ def fetch_cmc_pub(cur_time=None, worker_only: bool = False):
     if worker_only:
         worker = list(
             retrieve_work(
-                cur_time.isoformat()[:-3], (cur_time - timedelta(hours=6)).isoformat()[:-3], "desc"
+                cur_time.isoformat()[:-3], (cur_time - timedelta(hours=6)).isoformat()[:-3], "desc", monkeysOnly=True
             )
         )
 
