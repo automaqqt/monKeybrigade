@@ -152,7 +152,7 @@ def fetch_cmc_pub(cur_time=None, worker_only: bool = False):
     if worker_only:
         worker = list(
             retrieve_work(
-                cur_time.isoformat()[:-3], (cur_time - timedelta(hours=6)).isoformat()[:-3], "desc", monkeysOnly=True
+                cur_time.isoformat()[:-3], (cur_time - timedelta(hours=2)).isoformat()[:-3], "desc", monkeysOnly=True
             )
         )
 
