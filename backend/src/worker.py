@@ -6,8 +6,8 @@ from datetime import datetime, timedelta
 
 import requests
 from celery import Celery
-from sqlalchemy import exists
-from sqlmodel import Session
+from sqlalchemy import exists, func
+from sqlmodel import select, Session
 
 import cachetool
 import config
@@ -17,6 +17,7 @@ from db import (
     fetch_cmc_pub,
     update_done,
     update_elected,
+    engine
 )
 from models import Drop, Work
 from utils.eoswrap import transfer_wrap
@@ -82,7 +83,8 @@ def elect() -> str:
             print(f"drop failed with error: {e}, waiting 60 seconds and verify again")
             time.sleep(60)
     suc = update_done(handle, tx_id)
-
+    for winner in elected:
+        cachetool.set_target_cooldown(winner,cur_time.isoformat()[:-3])
     return f"{(time.time()-start1)} elected {len(elected)}, tx: {tx_id}"
 
 
@@ -117,11 +119,42 @@ def cmc_routine() -> str:
     print("fetching the hacky cache")
     try:
 
+        cut = cachetool.get_cache("db")["last_elec"]
+        if cut == "None":
+            cut = datetime.utcnow().isoformat()
         cmcs = fetch_cmc_pub()
         cachetool.set_cache("cmcs", list(cmcs))
+        dat = datetime.fromisoformat(cut)+timedelta(seconds=3600)
+        eligs = fetch_cmc_pub(dat,True)
+        db_cache = retrieve_db_status(eligs)
+        cachetool.set_cache("db",db_cache)
 
     except Exception as e:
         print(e)
 
     return f"cmc routine done,took: {(time.time()-start)} "
 
+def retrieve_db_status(eligs):
+    query = select([func.count()])
+    start = time.perf_counter()
+    with Session(engine) as session:  
+        lastelec = session.query(Drop).where(Drop.type=="raffle").order_by(Drop.issue_time.desc()).first()
+        drops_7d = session.query(Drop).where(Drop.issue_time>=(datetime.utcnow()-timedelta(days=7)).isoformat()[:-3]).all()
+        drops_30d = session.query(Drop).where(Drop.issue_time>=(datetime.utcnow()-timedelta(days=30)).isoformat()[:-3]).all()
+        drops_365d = session.query(Drop).where(Drop.issue_time>=(datetime.utcnow()-timedelta(days=365)).isoformat()[:-3]).all()
+        
+        countmonkeywork_60 = len(session.query(Work).where(Work.block_time>=(datetime.utcnow()-timedelta(seconds=3600)).isoformat()[:-3]).where(Work.mnky).all())
+        countmonkeywork_1440 = len(session.query(Work).where(Work.block_time>=(datetime.utcnow()-timedelta(hours=24)).isoformat()[:-3]).where(Work.mnky).all())
+        count_all_1440 = len(session.query(Work).where(Work.block_time>=(datetime.utcnow()-timedelta(hours=24)).isoformat()[:-3]).all())
+
+    count_7d = sum([len(r.winner.split(",")) for r in drops_7d])
+    count_30d = sum([len(r.winner.split(",")) for r in drops_30d])
+    count_365d = sum([len(r.winner.split(",")) for r in drops_365d])
+    db_info={
+        "count_work": [countmonkeywork_60,countmonkeywork_1440,count_all_1440],
+        "eligible": len(eligs),
+        "last_elec": lastelec.issue_time if lastelec else "None",
+        "mining_hist":[count_7d,count_30d,count_365d]
+    }
+    print(f"db_retrieve took {time.perf_counter()-start}")
+    return db_info
