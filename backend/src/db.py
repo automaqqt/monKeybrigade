@@ -158,8 +158,8 @@ def fetch_cmc_pub(cur_time=None, worker_only: bool = False):
 
         eligible = []
         for work in worker:
-            if work["user"] in cmc_full:
-                eligible.append(work["user"])
+            if work.user in cmc_full:
+                eligible.append(work.user)
         return eligible
     else:
         return cmc_full
