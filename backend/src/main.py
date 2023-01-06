@@ -15,7 +15,7 @@ from pydantic import BaseModel
 import cachetool
 from db import init_db, retrieve_drops, retrieve_work
 
-app = FastAPI(title="monKeybrigade API", description="made with <3 by green", version="0.0.1")
+app = FastAPI(title="monKeybrigade API", description="made with <3 by kind monKeys", version="0.0.2")
 
 origins = ["*"]
 
@@ -83,7 +83,7 @@ async def get_work(
 ):
 
     start = time.perf_counter()
-    qry = list(retrieve_work(user, before, after, order.value, limit, mnky))
+    qry = list(retrieve_work(before, after, order.value, limit, mnky, user))
 
     return {"query_time": time.perf_counter() - start, "count": len(qry), "data": qry}
 

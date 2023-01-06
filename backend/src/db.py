@@ -105,7 +105,7 @@ def retrieve_drops(before: str = None, after: str = None, limit: int = 100, sort
         ]
         return out
 
-def retrieve_work(user:str = None, before: str = None, after: str = None, sort: str = "asc", limit: int= 100, monkeysOnly: bool= False):
+def retrieve_work(before: str = None, after: str = None, sort: str = "asc", limit: int= 100, monkeysOnly: bool= False, user:str = None):
     with Session(engine) as session:
 
         qry = session.query(Work)

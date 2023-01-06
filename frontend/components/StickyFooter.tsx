@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
@@ -13,8 +12,8 @@ function Copyright() {
 
       {new Date().getFullYear()}
       {'  '}
-      <Link color="inherit" href="https://twitter.com/GCmstats">
-        Green
+      <Link color="inherit" href="https://connect.cryptomonkeys.cc/">
+        cryptomonKeys
       </Link>{'  '}
     </Typography>
   );
@@ -42,13 +41,9 @@ export default function StickyFooter() {
               : theme.palette.grey[800],
         }}
       >
-
-
-
-
         <Grid container spacing={2} sx={{ display: 'flex', alignItems: 'center' }} >
           <Grid item xs={4} sm={6}>
-            <Link href='https://www.cryptomonkeys.cc/monkeytrains' sx={{ textDecoration: 'none', paddingLeft: 2 }}>
+            <Link href='https://www.cryptomonkeys.cc/monkeybrigade' sx={{ textDecoration: 'none', paddingLeft: 2 }}>
               <Image src="/sticker.png" alt="miing Logo" width={120} height={120} />
             </Link>
           </Grid>

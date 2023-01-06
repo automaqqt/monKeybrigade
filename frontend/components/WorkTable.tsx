@@ -8,11 +8,18 @@ import TableTemplate from './TableTemplate';
 import CheckIcon from '@mui/icons-material/Check';
 
 
-function chooseTick(connected: Set<string>, miner: string) {
-  if (connected.has(miner)) {
+function chooseTick(connected: Set<string>, mnky: string) {
+  if (connected.has(mnky)) {
     return <CheckIcon />
   }
 }
+
+function chooseTickVenue(mnky: boolean) {
+  if (mnky) {
+    return <CheckIcon />
+  }
+}
+
 export default function WorkTable() {
   const { data: mines } = useSWR<WorkApiResponse, Error>(
     [
@@ -43,7 +50,7 @@ export default function WorkTable() {
             <TableCell>{humanizeDuration(date - Date.parse(row.block_time + "Z"), { round: true })} ago</TableCell>
             <TableCell>{row.user}</TableCell>
             <TableCell>{row.venue_id}</TableCell>
-            <TableCell>{row.mnky}</TableCell>
+            <TableCell>{chooseTickVenue(row.mnky)}</TableCell>
           </TableRow>
         ))}
       />

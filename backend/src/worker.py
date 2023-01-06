@@ -124,7 +124,7 @@ def cmc_routine() -> str:
             cut = datetime.utcnow().isoformat()
         cmcs = fetch_cmc_pub()
         cachetool.set_cache("cmcs", list(cmcs))
-        dat = datetime.fromisoformat(cut)+timedelta(seconds=3600)
+        dat = datetime.fromisoformat(cut)+timedelta(seconds=7200)
         eligs = fetch_cmc_pub(dat,True)
         db_cache = retrieve_db_status(eligs)
         cachetool.set_cache("db",db_cache)

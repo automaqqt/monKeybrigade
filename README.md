@@ -9,5 +9,5 @@ $ docker-compose up -d --build
 # How to run FRONTEND
 
 ```sh
-$ npm install && npm run dev && npm run start
+$ npm i && npm run build && npm run start
 ```
