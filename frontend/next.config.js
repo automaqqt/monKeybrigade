@@ -1,16 +1,21 @@
 /** @type {import('next').NextConfig} */
-module.exports = {
+
+const runtimeCaching = require("next-pwa/cache");
+const withPWA = require("next-pwa")({
+  dest: "public",
+  register: true,
+  skipWaiting: true,
+  runtimeCaching,
+  buildExcludes: [/middleware-manifest.json$/],
+  disable: process.env.NODE_ENV === "development",
+});
+
+const nextConfig = withPWA({
   reactStrictMode: true,
-};
-
-const withPWA = require("next-pwa");
-
-/* module.exports = withPWA({
-  pwa: {
-    dest: "public",
-    register: true,
-    fallbacks: {
-      image: '/head.png',
-    }
+  swcMinify: true,
+  i18n: {
+    locales: ["en"],
+    defaultLocale: "en",
   },
-}); */
+});
+module.exports = nextConfig; 
