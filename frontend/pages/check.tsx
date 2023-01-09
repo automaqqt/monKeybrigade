@@ -1,6 +1,5 @@
 import { Grid } from '@mui/material';
 import Container from '@mui/material/Container';
-// import MainCard from '../components/MainCard';
 import DarkCard from '../components/cards/DarkCard'
 import LightCard from '../components/cards/LightCard'
 
@@ -15,12 +14,13 @@ import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import HistoryIcon from '@mui/icons-material/History';
 import CasinoIcon from '@mui/icons-material/Casino';
-import { Box, Stack, Button } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { useState } from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { DateTime } from 'luxon';
 
+import CheckIcon from '@mui/icons-material/Check';
 import CircularProgress from '@mui/material/CircularProgress';
 
 import TableTemplate from '../components/TableTemplate';
@@ -35,6 +35,12 @@ function getTypeNamed(type: string) {
   }
   if (type == "targetmining") {
     return "Target mining"
+  }
+}
+
+function chooseTickVenue(mnky: boolean) {
+  if (mnky) {
+    return <CheckIcon />
   }
 }
 
@@ -202,7 +208,7 @@ export default function PDash() {
               <TableCell>{humanizeDuration(date - Date.parse(row.block_time + "Z"), { round: true })} ago</TableCell>
               <TableCell>{row.user}</TableCell>
               <TableCell>{row.venue_id}</TableCell>
-              <TableCell>{row.mnky}</TableCell>
+              <TableCell>{chooseTickVenue(row.mnky)}</TableCell>
             </TableRow>
           ))}
         />

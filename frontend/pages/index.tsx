@@ -53,11 +53,14 @@ export default function Home() {
             color="text.primary"
             gutterBottom
           >
-            <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-              <Image src="/head.png" alt="mining Logo" width={550} height={90} />
+            <Box sx={{ ml: -3, display: { xs: 'none', sm: 'none', md: 'flex' } }}>
+              <Image src="/head.png" alt="brigade head" width={650} height={180} />
             </Box>
-            <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
-              <Image src="/head.png" alt="mining Logo" width={340} height={60} />
+            <Box sx={{ ml: 6, display: { xs: 'none', sm: 'flex', md: 'none' } }}>
+              <Image src="/head.png" alt="brigade head" width={470} height={130} />
+            </Box>
+            <Box sx={{ ml: -1, display: { xs: 'flex', sm: 'none', md: 'none' } }}>
+              <Image src="/head.png" alt="brigade head" width={340} height={110} />
             </Box>
           </Typography>
           <Typography variant="h5" align="center" color="text.secondary" paragraph>
@@ -81,11 +84,12 @@ export default function Home() {
           <Typography variant='h5'>Distribution Status</Typography>
         </Grid>
 
-        <Grid item xs={6} md={6}>
-          <DarkCard icon={<QueryBuilderIcon />} label={"CD for raffle"} value={"72 hrs"} />
-        </Grid>
+        
         <Grid item xs={12} md={6}>
           <DarkCard icon={<CheckCircleOutlineIcon />} label={"eligible for next raffle"} value={db.db_state.eligible} />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <DarkCard icon={<QueryBuilderIcon />} label={"CD for raffle"} value={"72 hrs"} />
         </Grid>
 
         <Grid item xs={12} md={12}>

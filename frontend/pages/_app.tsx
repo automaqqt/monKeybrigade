@@ -72,7 +72,7 @@ export default function MyApp(props: MyAppProps) {
         <meta name="twitter:url" content="https://taco.cryptomonkeys.cc/" />
         <meta name="twitter:title" content="monKeybrigade" />
         <meta name="twitter:description" content="Earn cryptomonKeys by playing Taco Brigade!" />
-        <meta name="twitter:image" content="https://taco.cryptomonkeys.cc/logo.png" />
+        <meta name="twitter:image" content="https://taco.cryptomonkeys.cc/icon-192x192.png" />
         <meta name="twitter:site" content="@Crypt0monKeys" />
 
         <meta name="og:type" content="website" />
@@ -80,7 +80,7 @@ export default function MyApp(props: MyAppProps) {
         <meta name="og:title" content="monKeybrigade" />
         <meta content="Earn cryptomonKeys by working on the monkeybrigade in Taco." property="og:description" />
         <meta content="taco.cryptomonkeys.cc" property="og:site_name" />
-        <meta content='https://taco.cryptomonkeys.cc/logo.png' property='og:image' />
+        <meta content='https://taco.cryptomonkeys.cc/icon-192x192.png' property='og:image' />
         <meta name="theme-color" content="#0006A7" />
         <link rel="apple-touch-icon" sizes="180x180" href="icon-192x192.png"></link>
 

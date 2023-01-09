@@ -48,10 +48,10 @@ const ResponsiveAppBar = ({ ThemeToggleButton }: Props) => {
             variant="h6"
             noWrap
             component="div"
-            sx={{ mr: -12, display: { xs: 'none', md: 'flex' } }}
+            sx={{ mt:2, mb:-2, display: { xs: 'none', md: 'flex' } }}
           >
             <Link href='/' sx={{ textDecoration: 'none' }}>
-              <Image src="/icon-192x192.png" alt="mining Logo" width={160} height={80} />
+              <Image src="/icon-192x192.png" alt="brigade Logo" width={80} height={80} />
             </Link>
           </Typography>
 
@@ -106,7 +106,7 @@ const ResponsiveAppBar = ({ ThemeToggleButton }: Props) => {
             sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}
           >
             <Link href='/' sx={{ textDecoration: 'none' }}>
-              <Image src="/logo.png" alt="mining Logo" width={160} height={80} />
+              <Image src="/logo.png" alt="brigade Logo" width={95} height={80} />
             </Link>
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, justifyContent: 'center' }}>
