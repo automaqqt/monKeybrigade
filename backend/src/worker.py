@@ -147,9 +147,9 @@ def retrieve_db_status(eligs):
         countmonkeywork_1440 = len(session.query(Work).where(Work.block_time>=(datetime.utcnow()-timedelta(hours=24)).isoformat()[:-3]).where(Work.mnky).all())
         count_all_1440 = len(session.query(Work).where(Work.block_time>=(datetime.utcnow()-timedelta(hours=24)).isoformat()[:-3]).all())
 
-    count_7d = sum([len(r.winner.split(",")) for r in drops_7d])
-    count_30d = sum([len(r.winner.split(",")) for r in drops_30d])
-    count_365d = sum([len(r.winner.split(",")) for r in drops_365d])
+    count_7d = sum([len(r.winners.split(",")) for r in drops_7d])
+    count_30d = sum([len(r.winners.split(",")) for r in drops_30d])
+    count_365d = sum([len(r.winners.split(",")) for r in drops_365d])
     db_info={
         "count_work": [countmonkeywork_60,countmonkeywork_1440,count_all_1440],
         "eligible": len(eligs),
