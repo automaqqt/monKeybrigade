@@ -113,7 +113,7 @@ export default function PDash() {
   if (cdif) {
     const dat = new Date(Date.parse(cdif + "Z"));
     const ndir = addMinutes(dat, 4320);
-    if (ndir.getTime() > date) {
+    if (ndir.getTime() > date && false) {
 
       cd = humanizeDuration(date - ndir.getTime(), { round: true, units: ["d", "h", "m"] });
     }

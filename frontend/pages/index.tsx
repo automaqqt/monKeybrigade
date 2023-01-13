@@ -89,7 +89,7 @@ export default function Home() {
           <DarkCard icon={<CheckCircleOutlineIcon />} label={"eligible for next raffle"} value={db.db_state.eligible} />
         </Grid>
         <Grid item xs={12} md={6}>
-          <DarkCard icon={<QueryBuilderIcon />} label={"CD for raffle"} value={"72 hrs"} />
+          <DarkCard icon={<QueryBuilderIcon />} label={"CD for raffle"} value={"0 hrs"} />
         </Grid>
 
         <Grid item xs={12} md={12}>
