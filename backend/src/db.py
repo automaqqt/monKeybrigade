@@ -160,6 +160,6 @@ def fetch_cmc_pub(cur_time=None, worker_only: bool = False):
         for work in worker:
             if work.user in cmc_full:
                 eligible.append(work.user)
-        return eligible
+        return list(set(eligible))
     else:
         return cmc_full
