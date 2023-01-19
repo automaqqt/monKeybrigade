@@ -121,8 +121,9 @@ def transfer_assets(node, targets, mode):
 
         resp = ce.push_transaction(trx, eospy.keys.EOSKey(key), broadcast=True)
         print(resp["transaction_id"])
-        
-        postHook(f"Congrats {target}: {memo}")
+        for n, target in enumerate(targets):
+            memo = build_memo(mode, n)
+            postHook(f"Congrats {target}: {memo}")
         return True, resp["transaction_id"]
     except Exception as e:
         print(e)
