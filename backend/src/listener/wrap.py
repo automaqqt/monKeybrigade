@@ -22,6 +22,7 @@ class LeapListener:
         self.plugins = {}
         self.load_all_plugins()
         self.wanted_actions = [key for key in self.config]
+        self.error_log = []
 
     def load_all_plugins(self):
         for key in self.config: 
@@ -29,9 +30,9 @@ class LeapListener:
                 self.plugins[t] = self.config[key].plugin
 
     async def process_blocks(self):
-        while True:
-            start = time.time()
-
+        start_time = time.time()
+        while True:  
+            new_block_available = False
             try:
                 new_block_available = await self.next_block()
                 if new_block_available:
@@ -43,13 +44,18 @@ class LeapListener:
                                         self.plugins[trace['name']].process(trace, self.current_block)
                                     
             except Exception as e:
-                print(f"ERROR | {datetime.datetime.now().isoformat()}: {e}\nContext: \ncurrent_block_num: {self.current_block_num} ")
+                self.error_log.append(f"ERROR | {datetime.datetime.now().isoformat()}: {e}\nContext: \ncurrent_block_num: {self.current_block_num} ")
             
-            rtime = time.time()-start
-            if rtime < 0.4 and rtime > 0:
-                time.sleep(0.4 - rtime)
+            if not new_block_available:
+                time.sleep(0.51)
 
-            print([self.current_block_num, self.current_block['timestamp']])
+            if self.current_block_num % 1000 == 0 and new_block_available:
+                time.sleep(1)
+                head_block = int(self.cleos.get_info()["head_block_num"])
+                sec_to_sync = (head_block-self.current_block_num)*((time.time()-start_time)/1000)
+                formatted_time_to_sync = f'{int(sec_to_sync/60)}:{int(sec_to_sync%60)} m:s'
+                print(f'INFO | current processed block: {self.current_block_num} | blocks behind: {head_block-self.current_block_num} | estimate time to sync: {formatted_time_to_sync if self.is_x_seconds_behind(self.current_block,30) else "synced"} | error_log length: {len(self.error_log)}')
+                start_time = time.time()
 
     async def extract_wanted_actions(self, tx):
         actions_to_process = []
@@ -83,8 +89,11 @@ class LeapListener:
         return None
 
     async def next_block(self) -> bool:
-        if (datetime.datetime.fromisoformat(self.current_block['timestamp']) + datetime.timedelta(seconds=self.time_to_run_behind)).isoformat() < datetime.datetime.utcnow().isoformat():
+        if self.is_x_seconds_behind(block=self.current_block, seconds=self.time_to_run_behind):
             self.current_block = self.cleos.get_block(self.current_block_num)
             self.current_block_num += 1
             return True
         return False
+    
+    def is_x_seconds_behind(self, block, seconds) -> bool:
+        return ((datetime.datetime.fromisoformat(block['timestamp']) + datetime.timedelta(seconds=seconds)).isoformat() < datetime.datetime.utcnow().isoformat())
