@@ -13,6 +13,10 @@ class LeapListener:
         time_to_run_behind: int = 10
     ):
         self.cleos = eospy.cleos.Cleos(url=leap_rpc)
+        self.backup_cleos = ['https://wax.eosdac.io', 'https://wax.blacklusion.io', 'https://history-wax-mainnet.wecan.dev', 'https://wax.eosdublin.io', 'https://wax.cryptolions.io'] 
+        if leap_rpc not in self.backup_cleos:
+            self.backup_cleos.append(leap_rpc)
+
         self.time_to_run_behind = time_to_run_behind
         self.current_block_num = self.cleos.get_info()["head_block_num"]
         if start_block_num != 0:
@@ -23,6 +27,7 @@ class LeapListener:
         self.load_all_plugins()
         self.wanted_actions = [key for key in self.config]
         self.error_log = []
+        self.last_failed = 0
 
     def load_all_plugins(self):
         for key in self.config: 
@@ -77,10 +82,14 @@ class LeapListener:
         while fetching:
             try:
                 full_tx = self.cleos.get_transaction(tx_id)
+                if "traces" not in full_tx.keys():
+                    raise Exception("No traces")
                 fetching=False
             except Exception as e:
                 print(e)
-                time.sleep(1)
+                time.sleep(0.5)
+                next_index = (self.backup_cleos.index(self.cleos._prod_url) + 1) % len(self.backup_cleos)
+                self.cleos = eospy.cleos.Cleos(url=self.backup_cleos[next_index])
 
         for trace in full_tx['traces']:
             if trace['act']['name'] in self.config[act].wanted_traces:
@@ -89,8 +98,14 @@ class LeapListener:
         return None
 
     async def next_block(self) -> bool:
-        if self.is_x_seconds_behind(block=self.current_block, seconds=self.time_to_run_behind):
-            self.current_block = self.cleos.get_block(self.current_block_num)
+        if self.is_x_seconds_behind(block=self.current_block, seconds=self.time_to_run_behind) and time.time() - self.last_failed > 0.2:
+            try:
+                self.current_block = self.cleos.get_block(self.current_block_num)
+            except Exception as e:
+                self.last_failed = time.time()
+                next_index = (self.backup_cleos.index(self.cleos._prod_url) + 1) % len(self.backup_cleos)
+                self.cleos = eospy.cleos.Cleos(url=self.backup_cleos[next_index])
+                raise e
             self.current_block_num += 1
             return True
         return False
