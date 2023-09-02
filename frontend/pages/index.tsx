@@ -96,7 +96,7 @@ export default function Home() {
           <DarkCard icon={<QueryBuilderIcon />} label={"next raffle in"} value={next_election} />
         </Grid>
         <Grid item xs={12} md={12}>
-          <DarkCard icon={<HourglassEmptyIcon />} label={"total CMs distributed in week / month / 2022 / total"} value={db.db_state.mining_hist.join(" / ") + " / " + (db.db_state.mining_hist[2]).toString()} />
+          <DarkCard icon={<HourglassEmptyIcon />} label={"total CMs distributed in week / month / year / total"} value={db.db_state.mining_hist.join(" / ") + " / " + (db.db_state.mining_hist[2]).toString()} />
         </Grid>
 
         <Grid item xs={12} md={12}>
