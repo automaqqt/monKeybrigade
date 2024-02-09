@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 import datetime as dt
-import eospy.cleos
-import eospy.keys
-from eospy.types import Abi, Action
-from eospy.utils import parse_key_file
+import eospyabi.cleos
+import eospyabi.keys
+from eospyabi.types import Abi, Action
+from eospyabi.utils import parse_key_file
 import os
 import pytz, time
 import json, requests
@@ -87,7 +87,7 @@ def build_memo(mode, n):
 def transfer_assets(node, targets, mode):
     try:
         key = get_local_key()
-        ce = eospy.cleos.Cleos(url=node)
+        ce = eospyabi.cleos.Cleos(url=node)
         payloads = []
         for n, target in enumerate(targets):
             memo = build_memo(mode, n)
@@ -119,7 +119,7 @@ def transfer_assets(node, targets, mode):
             (dt.datetime.utcnow() + dt.timedelta(seconds=60)).replace(tzinfo=pytz.UTC)
         )
 
-        resp = ce.push_transaction(trx, eospy.keys.EOSKey(key), broadcast=True)
+        resp = ce.push_transaction(trx, eospyabi.keys.EOSKey(key), broadcast=True)
         print(resp["transaction_id"])
         for n, target in enumerate(targets):
             memo = build_memo(mode, n)

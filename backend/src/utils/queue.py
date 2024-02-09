@@ -1,9 +1,9 @@
 import datetime as dt
 from typing import List, Dict
-import eospy.cleos
-import eospy.keys
-from eospy.types import Abi, Action
-from eospy.utils import parse_key_file
+import eospyabi.cleos
+import eospyabi.keys
+from eospyabi.types import Abi, Action
+from eospyabi.utils import parse_key_file
 import os
 import pytz, time
 import random
@@ -29,12 +29,12 @@ class DropQueue:
     def __init__(
         self,
         pool_account: str = 'cmcdrops4all',
-        pool_account_key: eospy.keys.EOSKey = None,
+        pool_account_key: eospyabi.keys.EOSKey = None,
         leap_rpc: str = "http://waxapi.ledgerwise.io",
         wait_sec_until_confirm: int = 7,
         new_node_after_retries: int = 10
     ):
-        self.cleos = eospy.cleos.Cleos(url=leap_rpc)
+        self.cleos = eospyabi.cleos.Cleos(url=leap_rpc)
         self.pool_account = pool_account
         self.pool_account_key = pool_account_key
         self.load_eos_key()

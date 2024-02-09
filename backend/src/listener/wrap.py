@@ -1,4 +1,4 @@
-import time, datetime, eospy.cleos
+import time, datetime, eospyabi.cleos
 from typing import Dict
 from listener.types.config import ListenerConfig
 
@@ -12,7 +12,7 @@ class LeapListener:
         start_block_num: int = 0,
         time_to_run_behind: int = 10
     ):
-        self.cleos = eospy.cleos.Cleos(url=leap_rpc)
+        self.cleos = eospyabi.cleos.Cleos(url=leap_rpc)
         self.backup_cleos = ['https://wax.eosdac.io', 'https://wax.blacklusion.io', 'https://history-wax-mainnet.wecan.dev', 'https://wax.eosdublin.io', 'https://wax.cryptolions.io'] 
         if leap_rpc not in self.backup_cleos:
             self.backup_cleos.append(leap_rpc)
@@ -89,7 +89,7 @@ class LeapListener:
                 print(e)
                 time.sleep(0.5)
                 next_index = (self.backup_cleos.index(self.cleos._prod_url) + 1) % len(self.backup_cleos)
-                self.cleos = eospy.cleos.Cleos(url=self.backup_cleos[next_index])
+                self.cleos = eospyabi.cleos.Cleos(url=self.backup_cleos[next_index])
 
         for trace in full_tx['traces']:
             if trace['act']['name'] in self.config[act].wanted_traces:
@@ -104,7 +104,7 @@ class LeapListener:
             except Exception as e:
                 self.last_failed = time.time()
                 next_index = (self.backup_cleos.index(self.cleos._prod_url) + 1) % len(self.backup_cleos)
-                self.cleos = eospy.cleos.Cleos(url=self.backup_cleos[next_index])
+                self.cleos = eospyabi.cleos.Cleos(url=self.backup_cleos[next_index])
                 raise e
             self.current_block_num += 1
             return True

@@ -1,2 +1,6 @@
 
 backend/src/utils/greentesting_eosio.key
+backend/src/celerybeat-schedule
+backend/src/logs/celery.log
+backend/src/logs/celery.log
+backend/src/logs/celery.log
