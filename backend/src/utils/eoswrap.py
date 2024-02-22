@@ -84,13 +84,14 @@ def build_memo(mode, n):
     return memo
 
 
-def transfer_assets(node, targets, mode):
+def transfer_assets(node, targets, mode, memo = None):
     try:
         key = get_local_key()
         ce = eospyabi.cleos.Cleos(url=node)
         payloads = []
         for n, target in enumerate(targets):
-            memo = build_memo(mode, n)
+            if memo is None:
+                memo = build_memo(mode, n)
             payload = {
                 "account": "atomicassets",
                 "name": "transfer",
@@ -130,7 +131,7 @@ def transfer_assets(node, targets, mode):
         return False, None
 
 
-def transfer_wrap(winners, mode, rarity: str = None,template_id: str = None):
+def transfer_wrap(winners, mode, rarity: str = None,template_id: str = None, memo: str = None):
     nodes_avail = pick_best_waxnode("api")
     winrs = grab_winners(winners, rarity, template_id)
     print(mode, rarity, winrs)
@@ -141,7 +142,7 @@ def transfer_wrap(winners, mode, rarity: str = None,template_id: str = None):
         node = nodes_avail.pop(random.randint(0, len(nodes_avail) - 1))
         print(round, node)
 
-        transfered, tx_id = transfer_assets(node, winrs, mode)
+        transfered, tx_id = transfer_assets(node, winrs, mode, memo)
         # transfered,tx_id = transfer_assets('https://testnet.waxsweden.org',winrs,mode)
         round += 1
         if transfered:
