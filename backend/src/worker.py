@@ -1,6 +1,7 @@
 import os
 import random
 import time
+import ast
 from concurrent.futures.thread import _worker
 from datetime import datetime, timedelta
 
@@ -38,7 +39,7 @@ class SqlAlchemyTask(celery.Task):
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(60.0, cmc_routine.s(), name="cmc routine")
     sender.add_periodic_task(3600.0 * 2.0, elect.s(), name="elect every 2 hr")
-
+    sender.add_periodic_task(3600.0*24.0*7 , redrop.s(), name='redrop stuck loot every week')
 
 @celery.task(base=SqlAlchemyTask)
 def elect() -> str:
@@ -76,7 +77,6 @@ def elect() -> str:
     while dropping:
         try:
             tx_id = transfer_wrap(elected, "raffle")
-            # tx_id = transfer_wrap(["greentestede","pigapigapiga"],"raffle")
 
             dropping = False
         except Exception as e:
@@ -87,6 +87,40 @@ def elect() -> str:
         cachetool.set_target_cooldown(winner,cur_time.isoformat()[:-3])
     return f"{(time.time()-start1)} elected {len(elected)}, tx: {tx_id}"
 
+
+
+@celery.task(base=SqlAlchemyTask)
+def redrop() -> str:
+    start1=time.time()
+    current_day = datetime.utcnow().date()
+    stuck = db_session.query(Drop).filter(Drop.state!="DONE").all()
+    for drop in stuck:
+        if drop.state == "VERIFY": #No winners -> nothing to redrop
+            continue
+        elected = ast.literal_eval(drop.winners)
+        dropping = True
+        # Avoid potential conurrency issues
+        if drop.day == current_day:
+            pass #continue
+        mode = drop.type
+        if mode == "raffle":
+            memo = f"monKeybrigade: Stuck drop compensation - you are a winner of the raffle @hour {drop.hour} on the {drop.day}"
+        retry = 0
+        while dropping:
+            try:
+                tx_id = transfer_wrap(elected, mode, memo=memo)
+                dropping = False
+            except Exception as e:
+                print(f"redrop failed with error: {e}, waiting 60 seconds and verify again")
+                time.sleep(60)
+                retry += 1
+                if retry == 3:
+                    break
+        if retry != 3:
+            suc = update_done(mode,tx_id)
+                
+    return f"{(time.time()-start1)} to redrop stuck drops"
+    
 
 def draw(cur_time):
 
@@ -135,7 +169,7 @@ def cmc_routine() -> str:
     return f"cmc routine done,took: {(time.time()-start)} "
 
 def retrieve_db_status(eligs):
-    query = select([func.count()])
+    query = select(func.count())
     start = time.perf_counter()
     with Session(engine) as session:  
         lastelec = session.query(Drop).where(Drop.type=="raffle").order_by(Drop.issue_time.desc()).first()

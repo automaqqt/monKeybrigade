@@ -12,7 +12,6 @@ from models import Drop, Work
 
 engine = create_engine(
     "postgresql://postgres:postgres@db:5432/foo",
-    convert_unicode=True,
     pool_recycle=3600,
     pool_size=12,
 )
